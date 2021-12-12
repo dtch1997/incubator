@@ -226,10 +226,39 @@ def batch_obs(obs: List[Observation]) -> ObsBatch:
         end_of_episode_info,
     )
 
+class np_random_state:
+    """ A context manager for (possibly seeded) random number generation with numpy """
+    def __enter__(self, seed: Optional[int] = None):
+        self.was_seeded = (seed is not None)
+        if self.was_seeded:
+            self.orig_state = np.random.get_state()
+            seeded_state = np.random.RandomState(seed)
+            np.random.set_state(seeded_state)
+
+    def __exit__(self):
+        if self.was_seeded:
+            # Reset the numpy random state to its original value
+            np.random.set_state(self.orig_state)
+
+class Variable(ABC):
+    """Describes the shape and data type of a variable but not its value."""
+    def __init__(self, shape: Tuple, dtype: Any):
+        self.shape = shape 
+        self.dtype = dtype 
+
+class Discrete(Variable):
+    def __init__(self, num_values: int = None, shape: Tuple = ()):
+        # If num_values is None, assume infinitely many values
+        self.num_values = num_values
+        super(Discrete,self).__init__(shape, dtype = np.int32)
+
+class Float(Variable):
+    def __init__(self, shape: Tuple = ()):
+        super(Float,self).__init__(shape, dtype = np.float32)
 
 @dataclass
 class Entity:
-    features: List[str]
+    features: Dict[str, Variable]
 
 
 @dataclass
