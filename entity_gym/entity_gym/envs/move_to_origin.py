@@ -7,6 +7,8 @@ from entity_gym.environment import (
     CategoricalAction,
     DenseCategoricalActionMask,
     Entity,
+    Discrete,
+    Float,
     Environment,
     CategoricalActionSpace,
     ActionSpace,
@@ -36,9 +38,13 @@ class MoveToOrigin(Environment):
     def obs_space(cls) -> ObsSpace:
         return ObsSpace(
             {
-                "Spaceship": Entity(
-                    ["x_pos", "y_pos", "x_velocity", "y_velocity", "step"]
-                ),
+                "Spaceship": Entity({
+                    "x_pos": Float(),
+                    "y_pos": Float(),
+                    "x_velocity": Float(),
+                    "y_velocity": Float(),
+                    "step": Discrete(),
+                }),               
             }
         )
 
